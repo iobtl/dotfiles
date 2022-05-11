@@ -4,7 +4,9 @@ call plug#begin('~/.vim/plugged')
 "Plug 'projekt0n/github-nvim-theme'
 Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
 Plug 'EdenEast/nightfox.nvim'
+Plug 'haishanh/night-owl.vim'
 Plug 'bluz71/vim-nightfly-guicolors'
+Plug 'ayu-theme/ayu-vim'
 
 " Collection of common configurations for the Nvim LSP client
 Plug 'neovim/nvim-lspconfig'
@@ -43,6 +45,9 @@ Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
 Plug 'jiangmiao/auto-pairs'
 Plug 'luochen1990/rainbow'
 
+" Indent lines
+Plug 'lukas-reineke/indent-blankline.nvim'
+
 call plug#end()
 
 let g:rainbow_active = 1
@@ -53,8 +58,8 @@ set termguicolors
 syntax enable
 let g:nightflyTransparent = 1
 let g:nightflyItalics = 0
-colorscheme nightfly
-
+" colorscheme nightfly
+colorscheme dayfox
 " Keybindings
 nnoremap <Space>h <C-w>h
 nnoremap <Space>j <C-w>j
@@ -78,6 +83,7 @@ set completeopt=menuone,noinsert,noselect
 
 " Avoid showing extra messages when using completion
 set shortmess+=c
+" let g:rustfmt_autosave = 1
 
 " Configure LSP through rust-tools.nvim plugin.
 " rust-tools will configure and enable certain LSP features for us.
@@ -118,10 +124,32 @@ require('rust-tools').setup(opts)
 EOF
 
 lua <<EOF
-require'lspconfig'.pyright.setup{}
-require'lspconfig'.tsserver.setup {
+lspconfig = require'lspconfig'
+util = require'lspconfig/util'
+
+lspconfig.pyright.setup{}
+lspconfig.tsserver.setup {
     cmd = {"typescript-language-server", "--stdio"},
     settings = {documentFormatting = false}
+}
+lspconfig.gopls.setup {
+    cmd = {"gopls", "serve"},
+    filetypes = {"go", "gomod"},
+    root_dir = util.root_pattern("go.work", "go.mod", ".git"),
+    settings = {
+      gopls = {
+        analyses = {
+          unusedparams = true,
+        },
+        staticcheck = true,
+      },
+    },
+  }
+
+require("indent_blankline").setup {
+    -- for example, context is off by default, use this to turn it on
+    show_current_context = true,
+    show_current_context_start = true,
 }
 EOF
 
