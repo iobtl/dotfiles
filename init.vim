@@ -7,6 +7,17 @@ Plug 'EdenEast/nightfox.nvim'
 Plug 'haishanh/night-owl.vim'
 Plug 'bluz71/vim-nightfly-guicolors'
 Plug 'ayu-theme/ayu-vim'
+Plug 'mcchrish/zenbones.nvim'
+Plug 'rktjmp/lush.nvim'
+Plug 'cideM/yui'
+Plug 'owickstrom/vim-colors-paramount'
+Plug 'agudulin/vim-colors-alabaster'
+Plug 'p00f/alabaster_dark.nvim'
+Plug 'andreypopp/vim-colors-plain'
+Plug 'robertmeta/nofrils'
+Plug 'axvr/photon.vim'
+Plug 'romainl/Apprentice'
+Plug 'adigitoleo/vim-mellow', { 'tag': '*' }
 
 " Collection of common configurations for the Nvim LSP client
 Plug 'neovim/nvim-lspconfig'
@@ -48,6 +59,9 @@ Plug 'luochen1990/rainbow'
 " Indent lines
 Plug 'lukas-reineke/indent-blankline.nvim'
 
+" Navigation
+Plug 'ggandor/lightspeed.nvim'
+
 call plug#end()
 
 let g:rainbow_active = 1
@@ -58,8 +72,11 @@ set termguicolors
 syntax enable
 let g:nightflyTransparent = 1
 let g:nightflyItalics = 0
+"set background=light
+"set background=dark
+colorscheme nightfly
+let g:nofrils_heavylinenumbers=1
 " colorscheme nightfly
-colorscheme dayfox
 " Keybindings
 nnoremap <Space>h <C-w>h
 nnoremap <Space>j <C-w>j
