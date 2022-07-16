@@ -135,9 +135,6 @@ noremap <C-w>< :vertical:resize -5<CR>
 noremap <C-w>> :vertical:resize +5<CR>
 set tabstop=4 softtabstop=4 shiftwidth=4 expandtab
 
-" Rust config START
-" 
-"
 " Set completeopt to have a better completion experience
 " :help completeopt
 " menuone: popup even when there's only one match
@@ -342,6 +339,7 @@ nnoremap \b :cclose<CR>
 " Set updatetime for CursorHold
 " 300ms of no cursor movement to trigger CursorHold
 set updatetime=300
+
 " Show diagnostic popup on cursor hold
 autocmd CursorHold * lua vim.diagnostic.open_float(nil, { focusable = false })
 lua vim.api.nvim_command [[autocmd CursorMoved * lua require'tools'.clearBlameVirtText()]]
@@ -356,10 +354,6 @@ nnoremap <silent> g] <cmd>lua vim.diagnostic.goto_next()<CR>
 set signcolumn=yes
 
 autocmd BufWritePre * lua vim.lsp.buf.formatting_sync(nil, 200)
-
-"
-"
-" Rust config END
 
 lua <<EOF
 require'nvim-treesitter.configs'.setup {
