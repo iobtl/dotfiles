@@ -18,10 +18,21 @@ Plug 'robertmeta/nofrils'
 Plug 'axvr/photon.vim'
 Plug 'romainl/Apprentice'
 Plug 'adigitoleo/vim-mellow', { 'tag': '*' }
+Plug 'shaunsingh/nord.nvim'
+Plug 'RRethy/nvim-base16'
+Plug 'rose-pine/neovim'
+Plug 'cocopon/iceberg.vim'
+Plug 'mhartington/oceanic-next'
+Plug 'sainnhe/sonokai'
+Plug 'patstockwell/vim-monokai-tasty'
+Plug 'NTBBloodbath/doom-one.nvim'
+Plug 'sonph/onehalf', { 'rtp': 'vim' }
+Plug 'AhmedAbdulrahman/aylin.vim', { 'branch': '0.5-nvim' }
 
 " Collection of common configurations for the Nvim LSP client
 Plug 'neovim/nvim-lspconfig'
 Plug 'williamboman/nvim-lsp-installer'
+Plug 'ziglang/zig.vim'
 
 " Completion framework
 Plug 'hrsh7th/nvim-cmp'
@@ -51,6 +62,12 @@ Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
+Plug 'nvim-orgmode/orgmode'
+Plug 'nvim-telescope/telescope-smart-history.nvim'
+Plug 'nvim-telescope/telescope-file-browser.nvim'
+
+" sqlite
+Plug 'kkharji/sqlite.lua'
 
 " Brackets
 Plug 'jiangmiao/auto-pairs'
@@ -62,30 +79,60 @@ Plug 'lukas-reineke/indent-blankline.nvim'
 " Navigation
 Plug 'ggandor/lightspeed.nvim'
 
+" Wiki
+Plug 'vimwiki/vimwiki'
+
+" Statusbar
+Plug 'nvim-lualine/lualine.nvim'
+Plug 'kyazdani42/nvim-web-devicons'
+
 call plug#end()
 
+" Random lua commands
+command! Scratch lua require'tools'.makeScratch()
 let g:rainbow_active = 1
 
-set number relativenumber
+hi CursorLineNr guifg=#969696
+set cursorline
+set cursorlineopt=number
 
-set termguicolors
+set number relativenumber
+set rtp^="/Users/iobt/.opam/default/share/ocp-indent/vim"
+
+if (has("termguicolors"))
+    set termguicolors
+endif
+"set-default colorset-option -ga terminal-overrides ",xterm-256color:Tc"
+
 syntax enable
 let g:nightflyTransparent = 1
 let g:nightflyItalics = 0
+let g:sonokai_enable_italic = 0
+let g:sonokai_disable_italic_comment = 1
+let g:sonokai_style = 'andromeda'
+let g:sonokai_better_performance = 1
+
 "set background=light
-"set background=dark
-colorscheme nightfly
-let g:nofrils_heavylinenumbers=1
-" colorscheme nightfly
-" Keybindings
+set background=dark
+colorscheme iceberg
+"" Keybindings
 nnoremap <Space>h <C-w>h
 nnoremap <Space>j <C-w>j
 nnoremap <Space>k <C-w>k
 nnoremap <Space>l <C-w>l
 nnoremap <Space><Space> <C-w>w
 
+
 nnoremap \\ <CMD>:noh<CR> 
 
+" Open man pages
+nnoremap <leader>mm :Man 
+
+" Resize splits
+noremap <C-w>+ :resize +5<CR>
+noremap <C-w>- :resize -5<CR>
+noremap <C-w>< :vertical:resize -5<CR>
+noremap <C-w>> :vertical:resize +5<CR>
 set tabstop=4 softtabstop=4 shiftwidth=4 expandtab
 
 " Rust config START
@@ -101,7 +148,7 @@ set completeopt=menuone,noinsert,noselect
 " Avoid showing extra messages when using completion
 set shortmess+=c
 " let g:rustfmt_autosave = 1
-
+let g:zig_fmt_autosave = 0
 " Configure LSP through rust-tools.nvim plugin.
 " rust-tools will configure and enable certain LSP features for us.
 " See https://github.com/simrat39/rust-tools.nvim#configuration
@@ -143,6 +190,9 @@ EOF
 lua <<EOF
 lspconfig = require'lspconfig'
 util = require'lspconfig/util'
+local on_attach = function(_, bufnr)
+        vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+end
 
 lspconfig.pyright.setup{}
 lspconfig.tsserver.setup {
@@ -152,6 +202,7 @@ lspconfig.tsserver.setup {
 lspconfig.gopls.setup {
     cmd = {"gopls", "serve"},
     filetypes = {"go", "gomod"},
+    on_attach = on_attach,
     root_dir = util.root_pattern("go.work", "go.mod", ".git"),
     settings = {
       gopls = {
@@ -162,6 +213,15 @@ lspconfig.gopls.setup {
       },
     },
   }
+lspconfig.sumneko_lua.setup{}
+
+lspconfig.clangd.setup{
+    on_attach = on_attach,
+}
+
+lspconfig.zls.setup{
+    on_attach = on_attach,
+}
 
 require("indent_blankline").setup {
     -- for example, context is off by default, use this to turn it on
@@ -219,25 +279,31 @@ nnoremap <silent> gW    <cmd>lua vim.lsp.buf.workspace_symbol()<CR>
 nnoremap <silent> gd    <cmd>lua vim.lsp.buf.definition()<CR>
 
 nnoremap <silent> ga    <cmd>lua vim.lsp.buf.code_action()<CR>
+nnoremap <silent> gb    <cmd>lua require'tools'.blameVirtText()<CR>
 
-" Remapping <leader> to <Space>
-nnoremap <Space> <Nop>
-let mapleader=" "
-nnoremap <leader>sv :source $MYVIMRC<CR>
-
-" Telescope settings
-nnoremap <leader>ff <cmd>Telescope find_files<cr>
-nnoremap <leader>fg <cmd>Telescope live_grep<cr>
-nnoremap <leader>fb <cmd>Telescope buffers<cr>
-
-nnoremap <leader>ls <cmd>Telescope lsp_document_symbols<cr>
-nnoremap <leader>lS <cmd>Telescope lsp_workspace_symbols<cr>
-" nnoremap <leader>gr <cmd>Telescope lsp_references<cr>
 
 lua <<EOF
 local telescope_config = require("telescope")
 telescope_config.setup({
+  defaults = {
+    cache_picker = {
+      num_pickers = 10,
+    },
+    history = {
+      path = "~/.local/share/nvim/databases/telescope_history.sqlite3",
+      limit = 100
+    },
+    mappings = {
+      n = {
+        ["<Tab>"] = require("telescope.actions").toggle_selection
+      },
+    },
+  },
   pickers = {
+    find_files = {
+      find_command = fd,
+      hidden = true,
+    },
     live_grep = {
       only_sort_text = true
     }
@@ -245,7 +311,30 @@ telescope_config.setup({
 })
 
 telescope_config.load_extension("fzf")
+telescope_config.load_extension("smart_history")
+telescope_config.load_extension("file_browser")
 EOF
+
+" Remapping <leader> to <Space>
+nnoremap <Space> <Nop>
+let mapleader=" "
+nnoremap <leader>sv :source $MYVIMRC<CR>
+
+nnoremap <leader>rn <cmd>lua vim.lsp.buf.rename()<CR>
+
+" Telescope settings
+nnoremap <leader>ff <cmd>Telescope find_files<cr>
+nnoremap <leader>fg <cmd>Telescope live_grep<cr>
+nnoremap <leader>b  <cmd>Telescope buffers<cr>
+nnoremap <leader>fb <cmd>Telescope file_browser<cr>
+
+nnoremap <leader>rr <cmd>Telescope resume<cr>
+nnoremap <leader>p  <cmd>Telescope pickers<cr>
+nnoremap <leader>mp <cmd>Telescope man_pages<cr>
+
+nnoremap <leader>ls <cmd>Telescope lsp_document_symbols<cr>
+nnoremap <leader>lS <cmd>Telescope lsp_workspace_symbols<cr>
+" nnoremap <leader>gr <cmd>Telescope lsp_references<cr>
 
 " Quickly close quickfix list
 nnoremap \b :cclose<CR>
@@ -255,6 +344,8 @@ nnoremap \b :cclose<CR>
 set updatetime=300
 " Show diagnostic popup on cursor hold
 autocmd CursorHold * lua vim.diagnostic.open_float(nil, { focusable = false })
+lua vim.api.nvim_command [[autocmd CursorMoved * lua require'tools'.clearBlameVirtText()]]
+lua vim.api.nvim_command [[autocmd CursorMovedI * lua require'tools'.clearBlameVirtText()]]
 
 " Goto previous/next diagnostic warning/error
 nnoremap <silent> g[ <cmd>lua vim.diagnostic.goto_prev()<CR>
@@ -264,7 +355,7 @@ nnoremap <silent> g] <cmd>lua vim.diagnostic.goto_next()<CR>
 " this removes the jitter when warnings/errors flow in
 set signcolumn=yes
 
-autocmd BufWritePre *.rs lua vim.lsp.buf.formatting_sync(nil, 200)
+autocmd BufWritePre * lua vim.lsp.buf.formatting_sync(nil, 200)
 
 "
 "
@@ -279,3 +370,10 @@ require'nvim-treesitter.configs'.setup {
 }
 EOF
 
+lua <<EOF
+require'lualine'.setup{
+    options = {
+        icons_enabled = false,
+    },
+}
+EOF
