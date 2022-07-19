@@ -72,6 +72,7 @@ Plug 'kkharji/sqlite.lua'
 " Brackets
 Plug 'jiangmiao/auto-pairs'
 Plug 'luochen1990/rainbow'
+Plug 'kylechui/nvim-surround'
 
 " Indent lines
 Plug 'lukas-reineke/indent-blankline.nvim'
@@ -370,4 +371,20 @@ require'lualine'.setup{
         icons_enabled = false,
     },
 }
+
+require'nvim-surround'.setup{
+    delimiters = {
+        pairs = {
+            ["("] = { "(", ")" },
+            [")"] = { "(", ")" },
+            ["{"] = { "{", "}" },
+            ["}"] = { "{", "}" },
+            ["<"] = { "<", ">" },
+            [">"] = { "<", ">" },
+            ["["] = { "[", "]" },
+            ["]"] = { "[", "]" },
+        }
+    } 
+}
 EOF
+
