@@ -62,7 +62,9 @@ Plug 'hrsh7th/vim-vsnip'
 
 " Fuzzy finder
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'junegunn/fzf.vim'
+"Plug 'junegunn/fzf.vim'
+Plug 'ibhagwan/fzf-lua', {'branch': 'main'}
+Plug 'kyazdani42/nvim-web-devicons'
 " Optional
 Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
@@ -94,9 +96,36 @@ Plug 'kyazdani42/nvim-web-devicons'
 
 Plug 'psf/black', { 'branch': 'stable' }
 
+" Markdown/writing-related
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
 Plug 'ekickx/clipboard-image.nvim'
+Plug 'Pocco81/true-zen.nvim'
 call plug#end()
+
+lua << EOF
+	require("true-zen").setup {
+		-- your config goes here
+		-- or just leave it empty :)
+        modes = {
+            ataraxis = {
+                padding = {
+                    left = 35,
+                    right = 35,
+                }
+            }
+        },
+        -- hide() function not working for some reason
+        -- integrations = {
+        --     lualine = true,
+        -- }
+	}
+
+    require("clipboard-image").setup {
+        default = {
+            img_dir = {"%:p:h", "img"}
+        }
+    }
+EOF
 
 if exists('g:neovide')
     "set guifont=Iosevka\ Nerd\ Font\ Mono:h14
@@ -143,8 +172,6 @@ let g:sonokai_style = 'andromeda'
 let g:sonokai_better_performance = 1
 let g:everforest_background = 'hard'
 let g:everforest_better_performance  = 1
-
-let g:mkdp_auto_start = 1
 
 "set background=light
 set background=dark
@@ -321,9 +348,9 @@ EOF
 " Exclude filenames from Ripgrep when run through fzf.vim
 "command! -bang -nargs=* Rg call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case ".shellescape(<q-args>), 1, {'options': '--delimiter : --nth 4..'}, <bang>0) 
 
-" Code navigation shortcuts
+" LSP shortcuts
 nnoremap <silent> <c-]> <cmd>lua vim.lsp.buf.definition()<CR>
-nnoremap <silent> K     <cmd>lua vim.lsp.buf.hover()<CR>
+nnoremap <silent> gh     <cmd>lua vim.lsp.buf.hover()<CR>
 nnoremap <silent> gD    <cmd>lua vim.lsp.buf.implementation()<CR>
 nnoremap <silent> <c-k> <cmd>lua vim.lsp.buf.signature_help()<CR>
 nnoremap <silent> 1gD   <cmd>lua vim.lsp.buf.type_definition()<CR>
@@ -375,22 +402,75 @@ nnoremap <Space> <Nop>
 let mapleader=" "
 nnoremap <leader>sr :source $MYVIMRC<CR>
 
+lua <<EOF
+local actions = require'fzf-lua.actions'
+require("fzf-lua").setup{
+    actions = {
+        files = {
+            ["default"]       = actions.file_edit,
+            ["ctrl-s"]        = actions.file_split,
+            ["ctrl-v"]        = actions.file_vsplit,
+            -- ["ctrl-t"]        = actions.file_tabedit,
+            ["ctrl-q"] = actions.file_sel_to_qf,
+        },
+    },
+    fzf_opts = {
+        ['--layout'] = 'reverse-list',
+    },
+    keymap = {
+        fzf = {
+            -- fzf '--bind=' options
+            ["ctrl-z"]      = "abort",
+            ["ctrl-u"]      = "unix-line-discard",
+            ["ctrl-f"]      = "half-page-down",
+            ["ctrl-b"]      = "half-page-up",
+            ["ctrl-a"]      = "select-all",
+            ["ctrl-d"]      = "deselect-all",
+            ["ctrl-e"]      = "end-of-line",
+            ["ctrl-t"]       = "toggle-all",
+            -- Only valid with fzf previewers (bat/cat/git/etc)
+            ["f3"]          = "toggle-preview-wrap",
+            ["f4"]          = "toggle-preview",
+            ["shift-down"]  = "preview-page-down",
+            ["shift-up"]    = "preview-page-up",
+        },
+    },
+    winopts = {
+        preview = {
+            default = 'bat_native',
+            horizontal = 'right:55%',
+        },
+    },
+}
+EOF
+
+
+
 nnoremap <leader>rn <cmd>lua vim.lsp.buf.rename()<CR>
 nnoremap <leader>rf <cmd>:e!<CR>
 
-" Telescope settings
-nnoremap <leader>ff <cmd>Telescope find_files<cr>
+" Telescope/fuzzy finder settings
+"nnoremap <leader>ff <cmd>Telescope find_files<cr>
 "nnoremap <leader>fg <cmd>Telescope live_grep<cr>
-nnoremap <leader>fg <cmd>:Rg<cr>
-nnoremap <leader>b  <cmd>Telescope buffers<cr>
+"nnoremap <leader>fg <cmd>:Rg<cr>
+"nnoremap <leader>b  <cmd>Telescope buffers<cr>
+nnoremap <leader>ff <cmd>lua require'fzf-lua'.files()<CR>
+nnoremap <leader>fg <cmd>lua require'fzf-lua'.grep_project()<CR>
+nnoremap <leader>lg <cmd>lua require'fzf-lua'.live_grep_native()<CR>
+nnoremap <leader>b  <cmd>lua require'fzf-lua'.buffers()<CR>
+nnoremap <leader>sh <cmd>lua require'fzf-lua'.search_history()<CR>
+nnoremap <leader>ls <cmd>lua require'fzf-lua'.lsp_document_symbols()<CR>
+nnoremap <leader>lS <cmd>lua require'fzf-lua'.lsp_workspace_symbols()<CR>
+nnoremap <leader>ld <cmd>lua require'fzf-lua'.lsp_document_diagnostics()<CR>
+nnoremap <leader>lD <cmd>lua require'fzf-lua'.lsp_workspace_diagnostics()<CR>
+
 nnoremap <leader>fb <cmd>Telescope file_browser<cr>
 
-nnoremap <leader>rr <cmd>Telescope resume<cr>
 nnoremap <leader>rp  <cmd>Telescope pickers<cr>
 nnoremap <leader>mp <cmd>Telescope man_pages<cr>
 
-nnoremap <leader>ls <cmd>Telescope lsp_document_symbols<cr>
-nnoremap <leader>lS <cmd>Telescope lsp_workspace_symbols<cr>
+"nnoremap <leader>ls <cmd>Telescope lsp_document_symbols<cr>
+"nnoremap <leader>lS <cmd>Telescope lsp_workspace_symbols<cr>
 " nnoremap <leader>gr <cmd>Telescope lsp_references<cr>
 nnoremap <leader>sb  <cmd>:w<cr>
 
@@ -406,6 +486,14 @@ nnoremap <leader>7 7gt
 nnoremap <leader>8 8gt
 nnoremap <leader>9 9gt
 nnoremap <leader>0 :tablast<cr>
+
+" Markdown
+nnoremap <leader>mp <cmd>:MarkdownPreview<cr>
+nnoremap <leader>zm <cmd>:TZAtaraxis<cr>
+
+nnoremap <C-u> <C-u>zz
+nnoremap <C-d> <C-d>zz
+nnoremap n nzz
 
 " Quickly close quickfix list
 nnoremap \b :cclose<CR>
@@ -451,6 +539,11 @@ require'lualine'.setup{
     options = {
         icons_enabled = false,
         path = 1,
+        disabled_filetypes = {
+            statusline = { 'markdown' },
+            tabline = { 'markdown' },
+            winbar = { 'markdown' },
+        },
     },
 }
 
