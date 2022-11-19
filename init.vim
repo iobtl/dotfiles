@@ -100,9 +100,13 @@ Plug 'psf/black', { 'branch': 'stable' }
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
 Plug 'ekickx/clipboard-image.nvim'
 Plug 'Pocco81/true-zen.nvim'
+
+Plug 'numToStr/Comment.nvim'
 call plug#end()
 
 lua << EOF
+    require('Comment').setup{}
+
 	require("true-zen").setup {
 		-- your config goes here
 		-- or just leave it empty :)
@@ -173,15 +177,16 @@ let g:sonokai_better_performance = 1
 let g:everforest_background = 'hard'
 let g:everforest_better_performance  = 1
 
-"set background=light
-set background=dark
-"colorscheme iceberg
-colorscheme sonokai
 lua << EOF
 require("catppuccin").setup {
     flavour = "frappe" -- mocha, macchiato, frappe, latte
 }
 EOF
+
+"set background=light
+set background=dark
+"colorscheme iceberg
+colorscheme sonokai
 "colorscheme catppuccin
 "" Keybindings
 nnoremap <Space>h <C-w>h
@@ -350,9 +355,9 @@ EOF
 
 " LSP shortcuts
 nnoremap <silent> <c-]> <cmd>lua vim.lsp.buf.definition()<CR>
-nnoremap <silent> gh     <cmd>lua vim.lsp.buf.hover()<CR>
+nnoremap <silent> H     <cmd>lua vim.lsp.buf.hover()<CR>
 nnoremap <silent> gD    <cmd>lua vim.lsp.buf.implementation()<CR>
-nnoremap <silent> <c-k> <cmd>lua vim.lsp.buf.signature_help()<CR>
+nnoremap <silent> gh <cmd>lua vim.lsp.buf.signature_help()<CR>
 nnoremap <silent> 1gD   <cmd>lua vim.lsp.buf.type_definition()<CR>
 nnoremap <silent> gr    <cmd>lua vim.lsp.buf.references()<CR>
 nnoremap <silent> g0    <cmd>lua vim.lsp.buf.document_symbol()<CR>
@@ -396,7 +401,6 @@ telescope_config.load_extension("file_browser")
 telescope_config.load_extension("project")
 EOF
 
-
 " Remapping <leader> to <Space>
 nnoremap <Space> <Nop>
 let mapleader=" "
@@ -414,8 +418,15 @@ require("fzf-lua").setup{
             ["ctrl-q"] = actions.file_sel_to_qf,
         },
     },
+    -- Highlight groups here not really used 
+    -- Chose fg CursorLine since there isn't any styling applied, can override from third option
+    fzf_colors = {
+        ["fg+"] = { "fg", "CursorLine", "italic:159" },
+        ["hl"] = { "fg", "CursorLine", "underline"},
+        ["hl+"] = { "fg", "CursorLine", "underline:reverse:-1"},
+    },
     fzf_opts = {
-        ['--layout'] = 'reverse-list',
+        ['--layout'] = 'default',
     },
     keymap = {
         fzf = {
@@ -437,14 +448,17 @@ require("fzf-lua").setup{
     },
     winopts = {
         preview = {
-            default = 'bat_native',
+            -- Would like to use bat, but can't figure out a way to customize
+            -- the '--highlight-line' color without changing themes
+            -- default = 'bat_native',
             horizontal = 'right:55%',
         },
     },
 }
 EOF
 
-
+" Background color of highlighted line in preview window
+highlight FzfLuaCursorLine guibg=black
 
 nnoremap <leader>rn <cmd>lua vim.lsp.buf.rename()<CR>
 nnoremap <leader>rf <cmd>:e!<CR>
@@ -458,11 +472,16 @@ nnoremap <leader>ff <cmd>lua require'fzf-lua'.files()<CR>
 nnoremap <leader>fg <cmd>lua require'fzf-lua'.grep_project()<CR>
 nnoremap <leader>lg <cmd>lua require'fzf-lua'.live_grep_native()<CR>
 nnoremap <leader>b  <cmd>lua require'fzf-lua'.buffers()<CR>
+nnoremap <leader>bg <cmd>lua require'fzf-lua'.grep_curbuf()<CR>
+nnoremap <leader>bl <cmd>lua require'fzf-lua'.lgrep_curbuf()<CR>
+
 nnoremap <leader>sh <cmd>lua require'fzf-lua'.search_history()<CR>
 nnoremap <leader>ls <cmd>lua require'fzf-lua'.lsp_document_symbols()<CR>
 nnoremap <leader>lS <cmd>lua require'fzf-lua'.lsp_workspace_symbols()<CR>
 nnoremap <leader>ld <cmd>lua require'fzf-lua'.lsp_document_diagnostics()<CR>
 nnoremap <leader>lD <cmd>lua require'fzf-lua'.lsp_workspace_diagnostics()<CR>
+nnoremap <leader>ic <cmd>lua require'fzf-lua'.lsp_incoming_calls()<CR>
+nnoremap <leader>oc <cmd>lua require'fzf-lua'.lsp_outgoing_calls()<CR>
 
 nnoremap <leader>fb <cmd>Telescope file_browser<cr>
 
@@ -495,7 +514,8 @@ nnoremap <C-u> <C-u>zz
 nnoremap <C-d> <C-d>zz
 nnoremap n nzz
 
-" Quickly close quickfix list
+" Quickfix list
+nnoremap \c :copen<CR>
 nnoremap \b :cclose<CR>
 
 " Set updatetime for CursorHold
@@ -524,6 +544,7 @@ augroup format_on_save_py
   " autocmd BufWritePre *.py %!isort -
 augroup end
 
+autocmd BufEnter,CursorHold,InsertLeave <buffer> lua vim.lsp.codelens.refresh()
 
 lua <<EOF
 require'nvim-treesitter.configs'.setup {
