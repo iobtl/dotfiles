@@ -1,0 +1,113 @@
+"attribute" = { fg = "yellow" }
+"comment" = { fg = "brown" }
+"constant" = { fg = "magenta" }
+"constant.character" = { fg = "cyan" }
+"constructor" = { fg = "yellow" }
+"function" = { fg = "blue" }
+"function.macro" = { fg = "cyan" }
+"keyword" = { fg = "yellow", modifiers = ["bold"] }
+"label" = { fg = "yellow" }
+"module" = { fg = "white", modifiers = ["bold"] }
+"namespace" = { fg = "white", modifiers = ["bold"] }
+"operator" = { fg = "white" }
+"punctuation" = { fg = "white" }
+# special used in rendering picker highlights
+"special" = { fg = "white" }
+# "special.symbol" = { fg = "white" }
+"string" = { fg = "green" }
+"tag" = { fg = "green" }
+"type" = { fg = "yellow" }
+"variable" = { fg = "white" }
+"variable.builtin" = { fg = "yellow" }
+"variable.function" = { fg = "white", modifiers = ["italic"] }
+
+# TODO: revisit
+"markup.heading.marker" = "grey"
+"markup.heading.1" = { fg = "red", modifiers = ["bold"] }
+"markup.heading.2" = { fg = "orange", modifiers = ["bold"] }
+"markup.heading.3" = { fg = "yellow", modifiers = ["bold"] }
+"markup.heading.4" = { fg = "green", modifiers = ["bold"] }
+"markup.heading.5" = { fg = "blue", modifiers = ["bold"] }
+"markup.heading.6" = { fg = "fg", modifiers = ["bold"] }
+"markup.list" = "red"
+"markup.bold" = { modifiers = ["bold"] }
+"markup.italic" = { modifiers = ["italic"] }
+"markup.link.url" = { fg = "blue", modifiers = ["underlined"] }
+"markup.link.text" = "purple"
+"markup.quote" = "grey"
+"markup.raw" = "green"
+
+# Picker border and separator line colors
+"ui.background" = { fg = "gray" }
+"ui.background.separator" = { fg = "gray" }
+
+"ui.cursor" = { modifiers = ["reversed"] }
+"ui.cursor.insert" = { fg = "black", bg = "gray" }
+"ui.cursor.select" = { fg = "black", bg = "green" }
+"ui.cursor.match" = { fg = "yellow", bg = "diff_yellow" }
+"ui.cursorline" = { modifiers = ["bold"] }
+"ui.cursorline.primary" = { fg = "lightblack" }
+"ui.help" = { fg = "white", bg = "gray" }
+"ui.linenr" = { fg = "gray" }
+"ui.linenr.selected" = { fg = "white" }
+"ui.menu" = { fg = "white", bg = "bg2" }
+"ui.menu.selected" = { fg = "white", bg = "blue" }
+"ui.popup" = { fg = "gray", bg = "bg1" }
+"ui.selection" = { bg = "gray" }
+"ui.statusline" = { fg = "white", bg = "bg2" }
+"ui.statusline.inactive" = { fg = "gray", bg = "bg2" }
+"ui.statusline.normal" = { fg = "white", modifiers = ["bold"] }
+"ui.statusline.insert" = { fg = "black", bg = "green", modifiers = ["bold"] }
+"ui.statusline.select" = { fg = "black", bg = "blue", modifiers = ["bold"] }
+# This also represents ':' in Rust, for some reason
+"ui.text" = { fg = "white" }
+"ui.text.focus" = { fg = "blue" }
+"ui.virtual.ruler" = { bg = "grey_dim" }
+"ui.virtual.whitespace" = { fg = "grey_dim" }
+"ui.virtual.indent-guide" = { fg = "darkgray" }
+"ui.window" = { fg = "gray", bg = "black" }
+
+# Jump mode
+"ui.virtual.jump.single" = { fg = "#ff007c", modifiers = ["bold"] }
+"ui.virtual.jump.multi.first" = { fg = "#00dfff", modifiers = ["bold"] }
+"ui.virtual.jump.multi.rest" = "#2b8db3"
+"ui.virtual.jump.dim" = "#666666"
+
+# From Sonokai
+info = { fg = 'green', bg = 'bg2' }
+hint = { fg = 'blue', bg = 'bg2', modifiers = ['bold'] }
+warning = { fg = 'white', modifiers = ['bold'] }
+error = { fg = 'red', bg = 'bg2', modifiers = ['bold'] }
+
+# TODO: does this slow down rendering?
+diagnostic = { modifiers = ['underlined'] }
+
+# "diagnostic.hint" = { fg = "gray" }
+# "diagnostic.error" = { fg = "red" }
+# "diagnostic.warn" = { fg = "yellow" }
+# "diagnostic.info" = { fg = "blue" }
+
+"diff.plus"  = "green"
+"diff.delta" = "blue"
+"diff.minus" = "red"
+
+[palette]
+black      = "#1c1c1c"
+lightblack = "#262626"
+darkgray   = "#444444"
+gray       = "#626262"
+white      = "#e4e4e4"
+
+red        = "#ff5f5f"
+green      = "#87d75f"
+yellow     = "#ffd700"
+blue       = "#87afd7"
+magenta    = "#afafd7"
+cyan       = "#afd7af"
+brown      = "#af875f"
+
+# From Sonokai
+grey_dim = "#595f6f"
+diff_yellow = "#4e432f"
+bg1 = "#33353f"
+bg2 = "#363944"

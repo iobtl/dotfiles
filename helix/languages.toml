@@ -1,0 +1,63 @@
+[language-server]
+pyright = {  command = "pyright-langserver", args = ["--stdio"], config = { "analysis" = { "autoImportCompletions" = true, "typeCheckingMode" = "basic", "useLibraryCodeForTypes" = true } } }
+
+[[language]]
+name = "rust"
+auto-format = true
+
+[language-server.rust-analyzer.config]
+checkOnSave.enable = false
+
+[[language]]
+name = "c"
+auto-format = true
+
+[[language]]
+name = "go"
+auto-format = true
+
+[[language]]
+name = "python"
+formatter = { command = "blackd-client" }
+auto-format = true
+roots = ["pyproject.toml","pyrightconfig.json"]
+
+[[language]]
+name = "php"
+auto-format = true
+
+[[language]]
+name = "html"
+# formatter = { command = 'prettier', args = ["--parser", "html"] }
+
+[[language]]
+name = "javascript"
+# formatter = { command = 'deno', args = ["fmt", "-", "--ext", "js" ] }
+formatter = { command = 'prettierd' }
+auto-format = true
+
+[[language]]
+name = "json"
+# formatter = { command = 'deno', args = ["fmt", "-", "--ext", "json" ] }
+
+[[language]]
+name = "typescript"
+# formatter = { command = 'deno', args = ["fmt", "-", "--ext", "ts" ] }
+auto-format = true
+
+[[language]]
+name = "jsx"
+# formatter = { command = 'deno', args = ["fmt", "-", "--ext", "jsx" ] }
+formatter = { command = 'prettierd' }
+auto-format = true
+
+[[language]]
+name = "scss"
+# formatter = { command = 'deno', args = ["fmt", "-", "--ext", "jsx" ] }
+formatter = { command = 'prettierd' }
+auto-format = true
+
+[[language]]
+name = "tsx"
+# formatter = { command = 'deno', args = ["fmt", "-", "--ext", "tsx" ] }
+auto-format = true
