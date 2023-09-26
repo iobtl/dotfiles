@@ -24,7 +24,7 @@ if vim.g.neovide then
   -- setup neovide
   -- stylua: ignore
   -- vim.opt.guifont = "Iosevka Nerd Font Mono:h16"
-  vim.opt.guifont = "Iosevka Term SS05:h16"
+  vim.opt.guifont = "Iosevka SS05:h16"
   vim.g.neovide_cursor_animation_length = 0.05
   vim.g.neovide_cursor_animate_in_insert_mode = 0
   vim.g.neovide_cursor_animate_command_line = 0
@@ -200,10 +200,7 @@ require('lazy').setup({
     priority = 1000,
   },
   {
-    'mcchrish/zenbones.nvim',
-    dependencies = {
-      "rktjmp/lush.nvim"
-    },
+    'ribru17/bamboo.nvim',
     lazy = false,
     priority = 1000,
   },
@@ -241,12 +238,12 @@ require('lazy').setup({
 -- [[ Colorscheme ]]
 vim.g.sonokai_style = 'andromeda'
 vim.g.sonokai_better_performance = 1
--- vim.cmd.colorscheme('gruber-darker')
 vim.cmd.colorscheme('no-clown-fiesta')
 vim.cmd("hi CurSearch guifg=#ffa557 guibg=#984936 gui=bold")
 vim.cmd("hi Search guifg=#e1e1e1 guibg=#984936 gui=bold")
 vim.cmd("hi LineNr guifg=#727272")
 vim.cmd("hi CursorLine guibg=#373737")
+-- vim.cmd.colorscheme('minimal-base16')
 vim.o.cursorline = true
 -- vim.cmd.colorscheme("gruber-darker")
 -- Override line number color
@@ -273,7 +270,16 @@ vim.o.mouse = 'a'
 vim.o.clipboard = 'unnamedplus'
 
 -- Enable break indent
-vim.o.breakindent = true
+-- vim.o.breakindent = true
+
+-- Indent
+vim.o.expandtab = true
+vim.o.tabstop = 4
+vim.o.shiftwidth = 4
+
+-- TODO: this is only for initial buffer...
+vim.cmd("set ai")
+vim.cmd("set smartindent")
 
 -- Save undo history
 vim.o.undofile = true
@@ -302,6 +308,19 @@ vim.keymap.set("n", "<C-k>", "<cmd>wincmd k<cr>", { silent = true })
 vim.keymap.set("n", "<C-j>", "<cmd>wincmd j<cr>", { silent = true })
 vim.keymap.set("n", "<C-h>", "<cmd>wincmd h<cr>", { silent = true })
 
+-- Auto session save and restore, just in case of e.g. LSP crashes
+function saveSession()
+  vim.cmd("mks! ~/.config/nvim/session/session.vim")
+  vim.cmd("echo 'Saved session'")
+end
+
+function restoreSession()
+  vim.cmd("source ~/.config/nvim/session/session.vim")
+  vim.cmd("echo 'Restored session'")
+end
+
+vim.keymap.set("n", "<leader>ms", saveSession)
+vim.keymap.set("n", "<leader>mr", restoreSession)
 
 -- Replace current word on current line
 vim.keymap.set("n", "<leader>rw", function()
@@ -517,7 +536,7 @@ local cmp = require 'cmp'
 local snippy = require('snippy')
 snippy.setup {}
 local MIN_LABEL_WIDTH = 20
-local MAX_LABEL_WIDTH = 20
+local MAX_LABEL_WIDTH = 40
 local ELLIPSIS_CHAR = '...'
 
 cmp.setup {
