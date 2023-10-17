@@ -71,16 +71,26 @@ require('lazy').setup({
       local nls = require("null-ls")
       local h = require("null-ls.helpers")
 
-      local blackd = {
-        name = "blackd",
+      -- local blackd = {
+      --   name = "blackd",
+      --   method = nls.methods.FORMATTING,
+      --   filetypes = { "python" },
+      --   generator = h.formatter_factory({
+      --     command = "blackd-client",
+      --     to_stdin = true,
+      --   }),
+      -- }
+      local ruff_format = {
+        name = "ruff_format",
         method = nls.methods.FORMATTING,
         filetypes = { "python" },
         generator = h.formatter_factory({
-          command = "blackd-client",
+          args = { "format", "--stdin-filename", "$FILENAME", "-" },
+          command = "ruff",
           to_stdin = true,
         }),
       }
-      local sources = { nls.builtins.formatting.prettierd, blackd }
+      local sources = { nls.builtins.formatting.prettierd, ruff_format }
       return { sources = sources }
     end,
   },
@@ -162,12 +172,13 @@ require('lazy').setup({
         section_separators = '',
       },
       sections = {
+        lualine_a = { 'mode' },
         lualine_b = { 'branch', 'diff' },
         lualine_c = {
           { 'filename', path = 1 }
         },
-        lualine_x = {}
-      }
+        lualine_x = {},
+      },
     },
   },
 
@@ -179,7 +190,13 @@ require('lazy').setup({
     'ibhagwan/fzf-lua',
     branch = 'main',
     opts = {
-      "default",
+      "max-perf",
+      winopts = {
+        preview = {
+          layout = "vertical",
+          vertical = "down:65%"
+        },
+      }
     }
   },
 
@@ -193,14 +210,22 @@ require('lazy').setup({
     opts = {}
   },
 
+  -- Directory handling
+  {
+    'stevearc/oil.nvim',
+    opts = {}
+  },
+
+  -- Multicursor
+  {
+    'mg979/vim-visual-multi',
+    config = function()
+    end
+  },
+
   -- Colorscheme
   {
     'sainnhe/sonokai',
-    lazy = false,
-    priority = 1000,
-  },
-  {
-    'ribru17/bamboo.nvim',
     lazy = false,
     priority = 1000,
   },
@@ -216,11 +241,6 @@ require('lazy').setup({
         folds = false,
       }
     }
-  },
-  {
-    'aktersnurra/no-clown-fiesta.nvim',
-    lazy = false,
-    priority = 1000,
   }
   -- {
   --   'blazkowolf/gruber-darker.nvim',
@@ -238,11 +258,13 @@ require('lazy').setup({
 -- [[ Colorscheme ]]
 vim.g.sonokai_style = 'andromeda'
 vim.g.sonokai_better_performance = 1
-vim.cmd.colorscheme('no-clown-fiesta')
-vim.cmd("hi CurSearch guifg=#ffa557 guibg=#984936 gui=bold")
-vim.cmd("hi Search guifg=#e1e1e1 guibg=#984936 gui=bold")
-vim.cmd("hi LineNr guifg=#727272")
-vim.cmd("hi CursorLine guibg=#373737")
+-- vim.cmd.colorscheme('sonokai')
+-- vim.cmd.colorscheme('no-clown-fiesta')
+-- vim.cmd("hi CurSearch guifg=#ffa557 guibg=#984936 gui=bold")
+-- vim.cmd("hi Search guifg=#e1e1e1 guibg=#984936 gui=bold")
+-- vim.cmd("hi LineNr guifg=#727272")
+-- vim.cmd("hi CursorLine guibg=#373737")
+vim.cmd("colorscheme gruber-darker")
 -- vim.cmd.colorscheme('minimal-base16')
 vim.o.cursorline = true
 -- vim.cmd.colorscheme("gruber-darker")
@@ -322,6 +344,8 @@ end
 vim.keymap.set("n", "<leader>ms", saveSession)
 vim.keymap.set("n", "<leader>mr", restoreSession)
 
+vim.keymap.set("n", "<leader>e", "<cmd>Oil<cr>", { desc = "Open parent directory " })
+
 -- Replace current word on current line
 vim.keymap.set("n", "<leader>rw", function()
   local cword = vim.fn.expand("<cword>")
@@ -365,6 +389,11 @@ vim.keymap.set({ "i", "n" }, "<esc>", "<cmd>noh<cr><esc>", { desc = "Escape and 
 -- save file
 vim.keymap.set({ "i", "v", "n", "s" }, "<C-s>", "<cmd>w<cr><esc>", { desc = "Save file" })
 
+-- Quickfix
+vim.keymap.set({ "n" }, "]q", "<cmd>cnext<cr>", { desc = "Next list entry" })
+vim.keymap.set({ "n" }, "[q", "<cmd>cprev<cr>", { desc = "Prev list entry" })
+vim.keymap.set({ "n" }, "\\b", "<cmd>cclose<cr>", { desc = "Close quickfix" })
+
 -- [[ Autocmds ]]
 
 -- Highlight on yank
@@ -395,6 +424,15 @@ vim.api.nvim_create_autocmd("BufReadPost", {
   end,
 })
 
+-- set smart indent
+vim.api.nvim_create_autocmd("BufNew", {
+  group = vim.api.nvim_create_augroup("buf_indent", { clear = true }),
+  callback = function()
+    vim.cmd("set autoindent")
+    vim.cmd("set smartindent")
+  end
+})
+
 -- [[ LSP ]]
 --
 --  This function gets run when an LSP connects to a particular buffer.
@@ -422,7 +460,7 @@ local on_attach = function(_, bufnr)
   nmap('<leader>D', vim.lsp.buf.type_definition, 'Type [D]efinition')
   nmap('<leader>s', require('fzf-lua').lsp_document_symbols, '[D]ocument [S]ymbols')
   nmap('<leader>S', require('fzf-lua').lsp_live_workspace_symbols, '[W]orkspace [S]ymbols')
-  nmap('<leader>e', require('fzf-lua').diagnostics_document, '[E]rrors')
+  nmap('<leader>d', require('fzf-lua').diagnostics_document, '[E]rrors')
 
   -- See `:help K` for why this keymap
   nmap('K', vim.lsp.buf.hover, 'Hover Documentation')
